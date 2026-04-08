@@ -3,34 +3,48 @@ from collections import deque
 
 n, m = map(int, sys.stdin.readline().split())
 
-graph = []
+maze = []
+for _ in range(n):
+    maze.append(list(map(int, sys.stdin.readline().strip())))
 
-for i in range(n):
-    graph.append(list(map(int, sys.stdin.readline().strip())))
+# print(maze)
 
-visited = [[0] * m for _ in range(n)]
+# n, m = 7, 7
+# maze = [
+#     [1, 0, 1, 1, 1, 1, 1],
+#     [1, 1, 1, 0, 0, 0, 1],
+#     [1, 0, 0, 0, 0, 0, 1],
+#     [1, 0, 0, 0, 0, 0, 1],
+#     [1, 0, 0, 0, 0, 0, 1],
+#     [1, 0, 0, 0, 0, 0, 1],
+#     [1, 1, 1, 1, 1, 1, 1],
+# ]
 
-dirs = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+visited = [[False] * (m) for _ in range(n)]
+
+dir = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
 
-def bfs(x, y):
+def search(x, y):
     queue = deque([(x, y)])
-    visited[x][y] += 1
-
+    # count = 0
+    # print(queue)
     while queue:
-        (x, y) = queue.popleft()
-        for dx, dy in dirs:
-            new_x, new_y = x + dx, y + dy
-            if (
-                0 <= new_x < n
-                and 0 <= new_y < m
-                and graph[new_x][new_y] != 0
-                and visited[new_x][new_y] == 0
-            ):
-                visited[new_x][new_y] = visited[x][y] + 1
-                queue.append((new_x, new_y))
+        v_x, v_y = queue.popleft()
+        # print(v_x, v_y)
+        if visited[v_x][v_y] == False:
+            visited[v_x][v_y] = True
+            for dx, dy in dir:
+                new_x, new_y = v_x + dx, v_y + dy
+                if (
+                    0 <= new_x < n
+                    and 0 <= new_y < m
+                    and maze[new_x][new_y] != 0
+                    and visited[new_x][new_y] == False
+                ):
+                    queue.append([new_x, new_y])
+                    maze[new_x][new_y] = maze[v_x][v_y] + 1
 
 
-bfs(0, 0)
-
-print(visited[n - 1][m - 1])
+search(0, 0)
+print(maze[-1][-1])
